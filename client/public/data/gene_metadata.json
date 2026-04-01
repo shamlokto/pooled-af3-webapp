@@ -1,0 +1,440 @@
+[
+  {
+    "spd_locus": "SPD_2028",
+    "gene_name": "cbpD",
+    "category": "hydrolase",
+    "aa_length": 448
+  },
+  {
+    "spd_locus": "SPD_0768",
+    "gene_name": "cozEa",
+    "category": "elongasome",
+    "aa_length": 369
+  },
+  {
+    "spd_locus": "SPD_0315",
+    "gene_name": "cps2A",
+    "category": "capsule",
+    "aa_length": 481
+  },
+  {
+    "spd_locus": "SPD_0316",
+    "gene_name": "cps2B",
+    "category": "capsule",
+    "aa_length": 243
+  },
+  {
+    "spd_locus": "SPD_0317",
+    "gene_name": "cps2C",
+    "category": "capsule",
+    "aa_length": 230
+  },
+  {
+    "spd_locus": "SPD_0318",
+    "gene_name": "cps2D",
+    "category": "capsule",
+    "aa_length": 226
+  },
+  {
+    "spd_locus": "SPD_0319",
+    "gene_name": "cps2E",
+    "category": "capsule",
+    "aa_length": 455
+  },
+  {
+    "spd_locus": "SPD_0321",
+    "gene_name": "cps2F",
+    "category": "capsule",
+    "aa_length": 314
+  },
+  {
+    "spd_locus": "SPD_0322",
+    "gene_name": "cps2G",
+    "category": "capsule",
+    "aa_length": 348
+  },
+  {
+    "spd_locus": "SPD_0323",
+    "gene_name": "cps2H",
+    "category": "capsule",
+    "aa_length": 387
+  },
+  {
+    "spd_locus": "SPD_0324",
+    "gene_name": "cps2I",
+    "category": "capsule",
+    "aa_length": 385
+  },
+  {
+    "spd_locus": "SPD_0325",
+    "gene_name": "cps2J",
+    "category": "capsule",
+    "aa_length": 469
+  },
+  {
+    "spd_locus": "SPD_0326",
+    "gene_name": "cps2K",
+    "category": "capsule",
+    "aa_length": 412
+  },
+  {
+    "spd_locus": "SPD_0328",
+    "gene_name": "cps2L",
+    "category": "capsule",
+    "aa_length": 289
+  },
+  {
+    "spd_locus": "SPD_0329",
+    "gene_name": "cps2M",
+    "category": "capsule",
+    "aa_length": 197
+  },
+  {
+    "spd_locus": "SPD_0330",
+    "gene_name": "cps2N",
+    "category": "capsule",
+    "aa_length": 349
+  },
+  {
+    "spd_locus": "SPD_0331",
+    "gene_name": "cps2O",
+    "category": "capsule",
+    "aa_length": 283
+  },
+  {
+    "spd_locus": "SPD_0327",
+    "gene_name": "cps2P",
+    "category": "capsule",
+    "aa_length": 201
+  },
+  {
+    "spd_locus": "SPD_0320",
+    "gene_name": "cps2T",
+    "category": "capsule",
+    "aa_length": 394
+  },
+  {
+    "spd_locus": "SPD_0064",
+    "gene_name": "cpsR",
+    "category": "capsule",
+    "aa_length": 333
+  },
+  {
+    "spd_locus": "SPD_0549",
+    "gene_name": "dacB",
+    "category": "PBP",
+    "aa_length": 271
+  },
+  {
+    "spd_locus": "SPD_0767",
+    "gene_name": "dacA",
+    "category": "PBP",
+    "aa_length": 413
+  },
+  {
+    "spd_locus": "SPD_1484",
+    "gene_name": "ddl",
+    "category": "PG_synthesis",
+    "aa_length": 347
+  },
+  {
+    "spd_locus": "SPD_0600",
+    "gene_name": "divIB",
+    "category": "divisome",
+    "aa_length": 396
+  },
+  {
+    "spd_locus": "SPD_0008",
+    "gene_name": "divIC",
+    "category": "divisome",
+    "aa_length": 38
+  },
+  {
+    "spd_locus": "SPD_1474",
+    "gene_name": "divIVA",
+    "category": "divisome",
+    "aa_length": 262
+  },
+  {
+    "spd_locus": "SPD_2005",
+    "gene_name": "dltA",
+    "category": "PG_modification",
+    "aa_length": 516
+  },
+  {
+    "spd_locus": "SPD_2004",
+    "gene_name": "dltB",
+    "category": "PG_modification",
+    "aa_length": 414
+  },
+  {
+    "spd_locus": "SPD_2003",
+    "gene_name": "dltC",
+    "category": "PG_modification",
+    "aa_length": 79
+  },
+  {
+    "spd_locus": "SPD_2002",
+    "gene_name": "dltD",
+    "category": "PG_modification",
+    "aa_length": 422
+  },
+  {
+    "spd_locus": "SPD_1398",
+    "gene_name": "engB",
+    "category": "divisome",
+    "aa_length": 195
+  },
+  {
+    "spd_locus": "SPD_0710",
+    "gene_name": "ezrA",
+    "category": "divisome",
+    "aa_length": 575
+  },
+  {
+    "spd_locus": "SPD_1480",
+    "gene_name": "ftsA",
+    "category": "divisome",
+    "aa_length": 457
+  },
+  {
+    "spd_locus": "SPD_0659",
+    "gene_name": "ftsE",
+    "category": "divisome",
+    "aa_length": 230
+  },
+  {
+    "spd_locus": "SPD_0774",
+    "gene_name": "ftsK",
+    "category": "divisome",
+    "aa_length": 283
+  },
+  {
+    "spd_locus": "SPD_0305",
+    "gene_name": "ftsL",
+    "category": "divisome",
+    "aa_length": 105
+  },
+  {
+    "spd_locus": "SPD_0952",
+    "gene_name": "ftsW",
+    "category": "divisome",
+    "aa_length": 317
+  },
+  {
+    "spd_locus": "SPD_0660",
+    "gene_name": "ftsX",
+    "category": "divisome",
+    "aa_length": 308
+  },
+  {
+    "spd_locus": "SPD_1479",
+    "gene_name": "ftsZ",
+    "category": "divisome",
+    "aa_length": 419
+  },
+  {
+    "spd_locus": "SPD_0339",
+    "gene_name": "gpsB",
+    "category": "divisome",
+    "aa_length": 109
+  },
+  {
+    "spd_locus": "SPD_0675",
+    "gene_name": "khpA",
+    "category": "divisome",
+    "aa_length": 79
+  },
+  {
+    "spd_locus": "SPD_1849",
+    "gene_name": "khpB",
+    "category": "divisome",
+    "aa_length": 328
+  },
+  {
+    "spd_locus": "SPD_1737",
+    "gene_name": "lytA",
+    "category": "hydrolase",
+    "aa_length": 318
+  },
+  {
+    "spd_locus": "SPD_0853",
+    "gene_name": "lytB",
+    "category": "hydrolase",
+    "aa_length": 702
+  },
+  {
+    "spd_locus": "SPD_1403",
+    "gene_name": "lytC",
+    "category": "hydrolase",
+    "aa_length": 490
+  },
+  {
+    "spd_locus": "SPD_0342",
+    "gene_name": "mapZ",
+    "category": "divisome",
+    "aa_length": 464
+  },
+  {
+    "spd_locus": "SPD_1346",
+    "gene_name": "mpgA",
+    "category": "elongasome",
+    "aa_length": 551
+  },
+  {
+    "spd_locus": "SPD_0307",
+    "gene_name": "mraY",
+    "category": "PG_synthesis",
+    "aa_length": 326
+  },
+  {
+    "spd_locus": "SPD_2045",
+    "gene_name": "mreC",
+    "category": "elongasome",
+    "aa_length": 272
+  },
+  {
+    "spd_locus": "SPD_2044",
+    "gene_name": "mreD",
+    "category": "elongasome",
+    "aa_length": 164
+  },
+  {
+    "spd_locus": "SPD_0967",
+    "gene_name": "murA",
+    "category": "PG_synthesis",
+    "aa_length": 419
+  },
+  {
+    "spd_locus": "SPD_1222",
+    "gene_name": "murB",
+    "category": "PG_synthesis",
+    "aa_length": 316
+  },
+  {
+    "spd_locus": "SPD_1349",
+    "gene_name": "murC",
+    "category": "PG_synthesis",
+    "aa_length": 444
+  },
+  {
+    "spd_locus": "SPD_0598",
+    "gene_name": "murD",
+    "category": "PG_synthesis",
+    "aa_length": 450
+  },
+  {
+    "spd_locus": "SPD_1359",
+    "gene_name": "murE",
+    "category": "PG_synthesis",
+    "aa_length": 481
+  },
+  {
+    "spd_locus": "SPD_1483",
+    "gene_name": "murF",
+    "category": "PG_synthesis",
+    "aa_length": 457
+  },
+  {
+    "spd_locus": "SPD_0599",
+    "gene_name": "murG",
+    "category": "PG_synthesis",
+    "aa_length": 352
+  },
+  {
+    "spd_locus": "SPD_0535",
+    "gene_name": "murM",
+    "category": "PG_modification",
+    "aa_length": 406
+  },
+  {
+    "spd_locus": "SPD_0536",
+    "gene_name": "murN",
+    "category": "PG_modification",
+    "aa_length": 410
+  },
+  {
+    "spd_locus": "SPD_1764",
+    "gene_name": "murZ",
+    "category": "PG_synthesis",
+    "aa_length": 427
+  },
+  {
+    "spd_locus": "SPD_0336",
+    "gene_name": "pbp1a",
+    "category": "PBP",
+    "aa_length": 719
+  },
+  {
+    "spd_locus": "SPD_1925",
+    "gene_name": "pbp1b",
+    "category": "PBP",
+    "aa_length": 821
+  },
+  {
+    "spd_locus": "SPD_1821",
+    "gene_name": "pbp2a",
+    "category": "PBP",
+    "aa_length": 731
+  },
+  {
+    "spd_locus": "SPD_1486",
+    "gene_name": "pbp2b",
+    "category": "PBP",
+    "aa_length": 680
+  },
+  {
+    "spd_locus": "SPD_0306",
+    "gene_name": "pbp2x",
+    "category": "PBP",
+    "aa_length": 750
+  },
+  {
+    "spd_locus": "SPD_2043",
+    "gene_name": "pcsB",
+    "category": "hydrolase",
+    "aa_length": 392
+  },
+  {
+    "spd_locus": "SPD_1309",
+    "gene_name": "pgdA",
+    "category": "PG_modification",
+    "aa_length": 480
+  },
+  {
+    "spd_locus": "SPD_0912",
+    "gene_name": "pmp23",
+    "category": "hydrolase",
+    "aa_length": 204
+  },
+  {
+    "spd_locus": "SPD_0706",
+    "gene_name": "rodA",
+    "category": "elongasome",
+    "aa_length": 407
+  },
+  {
+    "spd_locus": "SPD_2050",
+    "gene_name": "rodZ",
+    "category": "elongasome",
+    "aa_length": 273
+  },
+  {
+    "spd_locus": "SPD_1477",
+    "gene_name": "sepF",
+    "category": "divisome",
+    "aa_length": 179
+  },
+  {
+    "spd_locus": "SPD_1867",
+    "gene_name": "oatA",
+    "category": "PG_modification",
+    "aa_length": 605
+  },
+  {
+    "spd_locus": "SPD_0369",
+    "gene_name": "zapA",
+    "category": "divisome",
+    "aa_length": 103
+  }
+]

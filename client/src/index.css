@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* LIGHT MODE — Scientific bioinformatics tool palette */
+:root {
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+  --background: 210 20% 98%;
+  --foreground: 215 25% 12%;
+  --border: 210 12% 88%;
+  --card: 210 20% 99%;
+  --card-foreground: 215 25% 12%;
+  --card-border: 210 12% 92%;
+  --sidebar: 215 28% 14%;
+  --sidebar-foreground: 210 15% 92%;
+  --sidebar-border: 215 22% 20%;
+  --sidebar-primary: 207 70% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 215 22% 22%;
+  --sidebar-accent-foreground: 210 15% 92%;
+  --sidebar-ring: 207 70% 55%;
+  --popover: 210 18% 97%;
+  --popover-foreground: 215 25% 12%;
+  --popover-border: 210 12% 88%;
+  --primary: 207 70% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 14% 92%;
+  --secondary-foreground: 215 25% 15%;
+  --muted: 210 14% 93%;
+  --muted-foreground: 215 10% 42%;
+  --accent: 207 30% 92%;
+  --accent-foreground: 215 25% 12%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 210 12% 78%;
+  --ring: 207 70% 45%;
+  --chart-1: 207 70% 45%;
+  --chart-2: 160 50% 42%;
+  --chart-3: 262 50% 55%;
+  --chart-4: 35 80% 55%;
+  --chart-5: 0 65% 50%;
+  --font-sans: 'Inter', 'Helvetica Neue', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius: 0.375rem;
+  --shadow-2xs: 0px 1px 2px 0px hsl(215 25% 12% / 0.04);
+  --shadow-xs: 0px 1px 3px 0px hsl(215 25% 12% / 0.06);
+  --shadow-sm: 0px 1px 3px 0px hsl(215 25% 12% / 0.06), 0px 1px 2px -1px hsl(215 25% 12% / 0.04);
+  --shadow: 0px 2px 4px 0px hsl(215 25% 12% / 0.06), 0px 1px 2px -1px hsl(215 25% 12% / 0.04);
+  --shadow-md: 0px 4px 8px 0px hsl(215 25% 12% / 0.08), 0px 2px 4px -1px hsl(215 25% 12% / 0.04);
+  --shadow-lg: 0px 8px 16px 0px hsl(215 25% 12% / 0.10), 0px 4px 6px -1px hsl(215 25% 12% / 0.05);
+  --shadow-xl: 0px 16px 32px 0px hsl(215 25% 12% / 0.12), 0px 8px 10px -1px hsl(215 25% 12% / 0.05);
+  --shadow-2xl: 0px 24px 48px 0px hsl(215 25% 12% / 0.18);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+.dark {
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+  --background: 215 25% 9%;
+  --foreground: 210 15% 92%;
+  --border: 215 15% 18%;
+  --card: 215 22% 11%;
+  --card-foreground: 210 15% 92%;
+  --card-border: 215 15% 16%;
+  --sidebar: 215 30% 8%;
+  --sidebar-foreground: 210 15% 88%;
+  --sidebar-border: 215 20% 14%;
+  --sidebar-primary: 207 65% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 215 18% 18%;
+  --sidebar-accent-foreground: 210 15% 88%;
+  --sidebar-ring: 207 65% 55%;
+  --popover: 215 22% 13%;
+  --popover-foreground: 210 15% 92%;
+  --popover-border: 215 15% 18%;
+  --primary: 207 65% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 215 15% 18%;
+  --secondary-foreground: 210 15% 92%;
+  --muted: 215 12% 20%;
+  --muted-foreground: 210 8% 58%;
+  --accent: 207 20% 20%;
+  --accent-foreground: 210 15% 92%;
+  --destructive: 0 72% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 215 12% 28%;
+  --ring: 207 65% 55%;
+  --chart-1: 207 65% 60%;
+  --chart-2: 160 45% 52%;
+  --chart-3: 262 45% 65%;
+  --chart-4: 35 75% 62%;
+  --chart-5: 0 60% 58%;
+  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.15);
+  --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.2);
+  --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.15);
+  --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.15);
+  --shadow-md: 0px 4px 8px 0px hsl(0 0% 0% / 0.25), 0px 2px 4px -1px hsl(0 0% 0% / 0.15);
+  --shadow-lg: 0px 8px 16px 0px hsl(0 0% 0% / 0.3), 0px 4px 6px -1px hsl(0 0% 0% / 0.15);
+  --shadow-xl: 0px 16px 32px 0px hsl(0 0% 0% / 0.35), 0px 8px 10px -1px hsl(0 0% 0% / 0.15);
+  --shadow-2xl: 0px 24px 48px 0px hsl(0 0% 0% / 0.4);
+
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Monospace for protein IDs */
+.font-protein {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+}
+
+/* Heatmap cell styles */
+.heatmap-cell {
+  transition: opacity 120ms ease;
+}
+.heatmap-cell:hover {
+  opacity: 0.85;
+  outline: 1px solid hsl(var(--foreground) / 0.3);
+  outline-offset: -1px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
