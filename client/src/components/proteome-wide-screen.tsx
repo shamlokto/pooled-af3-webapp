@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,21 +9,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Play, Upload, Download, FileJson, FileText, Terminal, Loader2 } from "lucide-react";
 import Histogram from "./histogram";
-
-interface ProteinInfo {
-  spd_locus: string;
-  gene_name: string;
-  category: string;
-  aa_length: number;
-  sequence?: string;
-}
+import { parseFastaToProteins, parseProteomeFasta } from "@/lib/fasta";
+import { generateProteomeWidePools } from "@/lib/pooling";
+import { generateAF3Jobs } from "@/lib/af3-json";
+import { analyzeResults, type ProteinInfo } from "@/lib/analysis";
+import { downloadExtractScript } from "@/lib/extract-script";
 
 export default function ProteomeWideScreen() {
   const { toast } = useToast();
   const [queryProteinId, setQueryProteinId] = useState<string>("");
   const [customSequence, setCustomSequence] = useState("");
   const [customQueryName, setCustomQueryName] = useState("query");
-  const [proteomeFasta, setProteomeFasta] = useState<string>("");
   const [proteomeProteins, setProteomeProteins] = useState<any[]>([]);
   const [usePresetProteome, setUsePresetProteome] = useState(true);
   const [isLoadingProteome, setIsLoadingProteome] = useState(false);
@@ -33,42 +27,45 @@ export default function ProteomeWideScreen() {
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [presetProteins, setPresetProteins] = useState<ProteinInfo[]>([]);
 
-  const { data: presetProteins = [] } = useQuery<ProteinInfo[]>({
-    queryKey: ["/api/proteins"],
-  });
+  // Load preset proteins from static JSON
+  useEffect(() => {
+    fetch("./data/gene_metadata.json")
+      .then((res) => res.json())
+      .then((data) => setPresetProteins(data))
+      .catch(() => {});
+  }, []);
 
-  // Load full proteome
-  const loadProteome = async () => {
-    setIsLoadingProteome(true);
-    try {
-      const res = await apiRequest("GET", "/api/proteome-fasta");
-      const data = await res.json();
-      setProteomeProteins(data.proteins);
-      setUsePresetProteome(true);
-      toast({ title: `Loaded ${data.count} proteins from D39W proteome` });
-    } catch (err: any) {
-      toast({ title: "Failed to load proteome", variant: "destructive" });
-    } finally {
-      setIsLoadingProteome(false);
-    }
-  };
-
-  // Upload custom proteome FASTA
+  // Upload proteome FASTA (user provides their own file)
   const handleProteomeFastaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const text = await file.text();
-    setProteomeFasta(text);
+    setIsLoadingProteome(true);
     try {
-      const res = await apiRequest("POST", "/api/parse-fasta", { fastaContent: text });
-      const parsed = await res.json();
+      const text = await file.text();
+      const parsed = parseProteomeFasta(text);
       setProteomeProteins(parsed);
       setUsePresetProteome(false);
       toast({ title: `Loaded ${parsed.length} target proteins` });
     } catch {
       toast({ title: "Failed to parse FASTA", variant: "destructive" });
+    } finally {
+      setIsLoadingProteome(false);
     }
+  };
+
+  // Use the preset 73 proteins as a mini-proteome for quick testing
+  const loadPresetAsProteome = () => {
+    const proteome = presetProteins.map((p) => ({
+      id: `${p.spd_locus}_${p.gene_name}`,
+      full_header: `${p.spd_locus}_${p.gene_name}`,
+      aa_length: p.aa_length,
+      sequence: p.sequence || "",
+    }));
+    setProteomeProteins(proteome);
+    setUsePresetProteome(true);
+    toast({ title: `Loaded ${proteome.length} D39W subset proteins as target proteome` });
   };
 
   // Get query protein info
@@ -94,7 +91,7 @@ export default function ProteomeWideScreen() {
     return null;
   };
 
-  // Generate pools
+  // Generate pools — client-side
   const handleGenerate = async () => {
     const query = getQueryProtein();
     if (!query) {
@@ -114,17 +111,32 @@ export default function ProteomeWideScreen() {
         sequence: p.sequence,
       }));
 
-      const res = await apiRequest("POST", "/api/pools/generate", {
-        mode: "proteome-wide",
-        queryId: query.id,
-        queryLength: query.length,
-        querySequence: query.sequence,
-        targetProteins: targets,
-        maxResidues: 4800,
+      const result = generateProteomeWidePools(query, targets);
+
+      // Build sequence map
+      const seqMap = new Map<string, string>();
+      seqMap.set(query.id, query.sequence);
+      for (const t of proteomeProteins) {
+        seqMap.set(t.id, t.sequence);
+      }
+
+      const af3Result = generateAF3Jobs(result.pools, seqMap, "proteome_screen");
+
+      setPoolResult({
+        pools: result.pools,
+        proteinNames: result.proteinNames,
+        stats: {
+          totalPools: result.pools.length,
+          totalPairs: result.pools.reduce((s: number, p: any) => s + (p.proteins.length - 1), 0),
+          residuesRange: result.pools.length > 0 ? [
+            Math.min(...result.pools.map((p) => p.totalResidues)),
+            Math.max(...result.pools.map((p) => p.totalResidues)),
+          ] : [0, 0],
+        },
+        af3Batches: af3Result.batches,
+        descriptions: af3Result.descriptions,
       });
-      const result = await res.json();
-      setPoolResult(result);
-      toast({ title: `Generated ${result.stats.totalPools} pools screening against ${proteomeProteins.length} proteins` });
+      toast({ title: `Generated ${result.pools.length} pools screening against ${proteomeProteins.length} proteins` });
     } catch (err: any) {
       toast({ title: "Pool generation failed", description: err.message, variant: "destructive" });
     } finally {
@@ -162,7 +174,7 @@ export default function ProteomeWideScreen() {
     URL.revokeObjectURL(url);
   };
 
-  // Upload results
+  // Upload results — client-side analysis
   const handleUploadResults = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !poolResult) return;
@@ -196,11 +208,41 @@ export default function ProteomeWideScreen() {
         return;
       }
 
-      const res = await apiRequest("POST", "/api/analyze", {
-        confidenceFiles,
-        descriptions: poolResult.descriptions,
-      });
-      const result = await res.json();
+      // Build protein sizes and metadata maps
+      const proteinSizes = new Map<string, number>();
+      const proteinMeta = new Map<string, ProteinInfo>();
+
+      // Add preset proteins
+      for (const p of presetProteins) {
+        const key = `${p.spd_locus}_${p.gene_name}`;
+        proteinSizes.set(key, p.aa_length);
+        proteinMeta.set(key, p);
+      }
+
+      // Add proteome proteins
+      for (const p of proteomeProteins) {
+        if (!proteinSizes.has(p.id)) {
+          proteinSizes.set(p.id, p.aa_length);
+          proteinMeta.set(p.id, {
+            spd_locus: p.id,
+            gene_name: p.id,
+            category: "target",
+            aa_length: p.aa_length,
+          });
+        }
+      }
+
+      // Handle any from descriptions
+      for (const d of poolResult.descriptions) {
+        const prots = d.proteins_tested.split("::::");
+        for (const p of prots) {
+          if (!proteinSizes.has(p)) {
+            proteinSizes.set(p, 300);
+          }
+        }
+      }
+
+      const result = analyzeResults(confidenceFiles, poolResult.descriptions, proteinSizes, proteinMeta);
       setAnalysisResult(result);
       toast({ title: `Analyzed ${confidenceFiles.length} files` });
     } catch (err: any) {
@@ -286,23 +328,23 @@ export default function ProteomeWideScreen() {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <Button
               variant="outline"
               size="sm"
-              onClick={loadProteome}
-              disabled={isLoadingProteome}
+              onClick={loadPresetAsProteome}
+              disabled={isLoadingProteome || presetProteins.length === 0}
               data-testid="btn-load-proteome"
             >
               {isLoadingProteome ? <Loader2 className="animate-spin mr-1" size={13} /> : null}
-              Load D39W Proteome (1,910)
+              Load D39W Subset ({presetProteins.length})
             </Button>
             <span className="text-xs text-muted-foreground">or</span>
             <label>
               <Button variant="outline" size="sm" asChild>
                 <span className="cursor-pointer flex items-center gap-1.5">
                   <Upload size={13} />
-                  Upload Custom FASTA
+                  Upload Proteome FASTA
                 </span>
               </Button>
               <input
@@ -314,6 +356,18 @@ export default function ProteomeWideScreen() {
               />
             </label>
           </div>
+          <p className="text-xs text-muted-foreground">
+            For the full D39W proteome (1,910 proteins), download the FASTA from{" "}
+            <a
+              href="https://www.uniprot.org/proteomes/UP000001452"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              UniProt (UP000001452)
+            </a>{" "}
+            and upload it here.
+          </p>
 
           <Button
             onClick={handleGenerate}
@@ -359,7 +413,7 @@ export default function ProteomeWideScreen() {
                 <FileText size={13} />
                 Description CSV
               </Button>
-              <Button variant="outline" size="sm" onClick={() => window.open("/api/extract-script", "_blank")} className="flex items-center gap-1.5">
+              <Button variant="outline" size="sm" onClick={downloadExtractScript} className="flex items-center gap-1.5">
                 <Terminal size={13} />
                 Extract Script
               </Button>

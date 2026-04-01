@@ -1,6 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,14 +11,11 @@ import { Download, Upload, Play, CheckSquare, Square, Filter, FileJson, FileText
 import Heatmap from "./heatmap";
 import ScoreTable from "./score-table";
 import Histogram from "./histogram";
-
-interface ProteinInfo {
-  spd_locus: string;
-  gene_name: string;
-  category: string;
-  aa_length: number;
-  sequence?: string;
-}
+import { parseFastaToProteins } from "@/lib/fasta";
+import { generatePools } from "@/lib/pooling";
+import { generateAF3Jobs } from "@/lib/af3-json";
+import { analyzeResults, type ProteinInfo, type AnalysisResult } from "@/lib/analysis";
+import { downloadExtractScript } from "@/lib/extract-script";
 
 interface Pool {
   proteins: string[];
@@ -36,13 +31,6 @@ interface PoolingResult {
   descriptions: { job_number: string; proteins_tested: string }[];
 }
 
-interface AnalysisResult {
-  pairwiseScores: any[];
-  matrix: number[][];
-  matrixLabels: string[];
-  categoryOrder: string[];
-}
-
 export default function AllByAllScreen() {
   const { toast } = useToast();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -54,13 +42,20 @@ export default function AllByAllScreen() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [customMode, setCustomMode] = useState(false);
-  const [customFastaContent, setCustomFastaContent] = useState("");
   const [customProteins, setCustomProteins] = useState<ProteinInfo[]>([]);
+  const [presetProteins, setPresetProteins] = useState<ProteinInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch preset proteins
-  const { data: presetProteins = [], isLoading } = useQuery<ProteinInfo[]>({
-    queryKey: ["/api/proteins"],
-  });
+  // Load preset proteins from static JSON
+  useEffect(() => {
+    fetch("./data/gene_metadata.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setPresetProteins(data);
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
+  }, []);
 
   const proteins = customMode ? customProteins : presetProteins;
 
@@ -101,17 +96,15 @@ export default function AllByAllScreen() {
     setSelectedIds(new Set());
   }, []);
 
-  // Handle custom FASTA upload
+  // Handle custom FASTA upload — client-side parsing
   const handleFastaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const text = await file.text();
-    setCustomFastaContent(text);
     try {
-      const res = await apiRequest("POST", "/api/parse-fasta", { fastaContent: text });
-      const parsed = await res.json();
+      const parsed = parseFastaToProteins(text);
       setCustomProteins(parsed);
-      setSelectedIds(new Set(parsed.map((p: any) => p.spd_locus)));
+      setSelectedIds(new Set(parsed.map((p) => p.spd_locus)));
       setCustomMode(true);
       toast({ title: `Loaded ${parsed.length} proteins from FASTA` });
     } catch {
@@ -119,7 +112,7 @@ export default function AllByAllScreen() {
     }
   };
 
-  // Generate pools
+  // Generate pools — client-side
   const handleGeneratePools = async () => {
     if (selectedIds.size < 2) {
       toast({ title: "Select at least 2 proteins", variant: "destructive" });
@@ -128,11 +121,62 @@ export default function AllByAllScreen() {
     setIsGenerating(true);
     try {
       const proteinIds = Array.from(selectedIds);
-      const res = await apiRequest("POST", "/api/pools/generate", { proteinIds, mode: "all-by-all" });
-      const result = await res.json();
-      setPoolResult(result);
+
+      // Build protein list with sizes
+      const proteinList = proteinIds.map((id) => {
+        const meta = proteins.find(
+          (g) => g.spd_locus === id || `${g.spd_locus}_${g.gene_name}` === id
+        );
+        const fastaKey = meta
+          ? `${meta.spd_locus}_${meta.gene_name}`
+          : id;
+        return {
+          id: fastaKey,
+          length: meta?.aa_length || 0,
+        };
+      });
+
+      const poolResult = generatePools(proteinList);
+
+      // Build sequence map for AF3 JSON
+      const seqMap = new Map<string, string>();
+      for (const p of proteins) {
+        const key = `${p.spd_locus}_${p.gene_name}`;
+        if (p.sequence) seqMap.set(key, p.sequence);
+      }
+
+      const af3Result = generateAF3Jobs(poolResult.pools, seqMap, "spn_d39w");
+
+      const stats = {
+        totalPools: poolResult.pools.length,
+        totalPairs: poolResult.pools.reduce(
+          (sum, p) => sum + (p.proteins.length * (p.proteins.length - 1)) / 2,
+          0
+        ),
+        residuesRange: poolResult.pools.length > 0 ? [
+          Math.min(...poolResult.pools.map((p) => p.totalResidues)),
+          Math.max(...poolResult.pools.map((p) => p.totalResidues)),
+        ] : [0, 0],
+        meanCoverage:
+          poolResult.coverageMatrix.length > 0
+            ? poolResult.coverageMatrix
+                .flatMap((row, i) =>
+                  row.filter((_, j) => j > i).filter((v) => v > 0)
+                ).length /
+              ((poolResult.proteinNames.length *
+                (poolResult.proteinNames.length - 1)) /
+                2)
+            : 0,
+      };
+
+      setPoolResult({
+        ...poolResult,
+        stats,
+        af3Batches: af3Result.batches,
+        descriptions: af3Result.descriptions,
+      });
       setStep(3);
-      toast({ title: `Generated ${result.stats.totalPools} pools covering ${result.stats.totalPairs} pair tests` });
+      toast({ title: `Generated ${stats.totalPools} pools covering ${stats.totalPairs} pair tests` });
     } catch (err: any) {
       toast({ title: "Pool generation failed", description: err.message, variant: "destructive" });
     } finally {
@@ -172,11 +216,7 @@ export default function AllByAllScreen() {
     URL.revokeObjectURL(url);
   };
 
-  const downloadExtractScript = () => {
-    window.open("/api/extract-script", "_blank");
-  };
-
-  // Upload and analyze results
+  // Upload and analyze results — client-side
   const handleUploadResults = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !poolResult) return;
@@ -187,7 +227,6 @@ export default function AllByAllScreen() {
 
       for (const file of Array.from(files)) {
         if (file.name.endsWith(".zip")) {
-          // Handle zip file
           const JSZip = (await import("jszip")).default;
           const zip = await JSZip.loadAsync(file);
           for (const [name, zipEntry] of Object.entries(zip.files)) {
@@ -212,11 +251,26 @@ export default function AllByAllScreen() {
         return;
       }
 
-      const res = await apiRequest("POST", "/api/analyze", {
-        confidenceFiles,
-        descriptions: poolResult.descriptions,
-      });
-      const result = await res.json();
+      // Build protein sizes and metadata maps
+      const proteinSizes = new Map<string, number>();
+      const proteinMeta = new Map<string, ProteinInfo>();
+      for (const p of proteins) {
+        const key = `${p.spd_locus}_${p.gene_name}`;
+        proteinSizes.set(key, p.aa_length);
+        proteinMeta.set(key, p);
+      }
+
+      // Handle custom proteins from descriptions
+      for (const d of poolResult.descriptions) {
+        const prots = d.proteins_tested.split("::::");
+        for (const p of prots) {
+          if (!proteinSizes.has(p)) {
+            proteinSizes.set(p, 300);
+          }
+        }
+      }
+
+      const result = analyzeResults(confidenceFiles, poolResult.descriptions, proteinSizes, proteinMeta);
       setAnalysisResult(result);
       setStep(5);
       toast({ title: `Analyzed ${confidenceFiles.length} confidence files, found ${result.pairwiseScores.length} pairs` });
@@ -531,7 +585,7 @@ export default function AllByAllScreen() {
             <div className="mt-5 pt-4 border-t">
               <h3 className="text-sm font-medium mb-2">Upload AF3 Results</h3>
               <p className="text-xs text-muted-foreground mb-3">
-                After running jobs on the AF3 server, use the extract script to get confidence files, 
+                After running jobs on the AF3 server, use the extract script to get confidence files,
                 then upload the resulting zip or individual JSON files.
               </p>
               <label>
