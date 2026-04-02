@@ -55,6 +55,28 @@ export default function ProteomeWideScreen() {
     }
   };
 
+  // Load full D39W proteome (1,910 proteins)
+  const loadFullProteome = async () => {
+    setIsLoadingProteome(true);
+    try {
+      const res = await fetch("./data/d39w_proteome.json");
+      const data = await res.json();
+      const proteome = data.map((p: any) => ({
+        id: p.gene_name || p.id,
+        full_header: p.id,
+        aa_length: p.length,
+        sequence: p.sequence,
+      }));
+      setProteomeProteins(proteome);
+      setUsePresetProteome(false);
+      toast({ title: `Loaded full D39W proteome: ${proteome.length} proteins` });
+    } catch {
+      toast({ title: "Failed to load proteome", variant: "destructive" });
+    } finally {
+      setIsLoadingProteome(false);
+    }
+  };
+
   // Use the preset 73 proteins as a mini-proteome for quick testing
   const loadPresetAsProteome = () => {
     const proteome = presetProteins.map((p) => ({
@@ -332,19 +354,28 @@ export default function ProteomeWideScreen() {
             <Button
               variant="outline"
               size="sm"
+              onClick={loadFullProteome}
+              disabled={isLoadingProteome}
+              data-testid="btn-load-full-proteome"
+            >
+              {isLoadingProteome ? <Loader2 className="animate-spin mr-1" size={13} /> : null}
+              D39W Full Proteome (1,910)
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={loadPresetAsProteome}
               disabled={isLoadingProteome || presetProteins.length === 0}
               data-testid="btn-load-proteome"
             >
-              {isLoadingProteome ? <Loader2 className="animate-spin mr-1" size={13} /> : null}
-              Load D39W Subset ({presetProteins.length})
+              D39W Subset ({presetProteins.length})
             </Button>
             <span className="text-xs text-muted-foreground">or</span>
             <label>
               <Button variant="outline" size="sm" asChild>
                 <span className="cursor-pointer flex items-center gap-1.5">
                   <Upload size={13} />
-                  Upload Proteome FASTA
+                  Upload Custom FASTA
                 </span>
               </Button>
               <input
@@ -357,16 +388,16 @@ export default function ProteomeWideScreen() {
             </label>
           </div>
           <p className="text-xs text-muted-foreground">
-            For the full D39W proteome (1,910 proteins), download the FASTA from{" "}
+            D39W reference proteome (UP000001452) from{" "}
             <a
               href="https://www.uniprot.org/proteomes/UP000001452"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary underline"
             >
-              UniProt (UP000001452)
-            </a>{" "}
-            and upload it here.
+              UniProt
+            </a>.
+            Full proteome is pre-loaded (1,910 proteins). Subset contains the 73 cell wall/division proteins.
           </p>
 
           <Button
