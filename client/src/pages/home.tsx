@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AllByAllScreen from "@/components/all-by-all-screen";
 import ProteomeWideScreen from "@/components/proteome-wide-screen";
-import { FlaskConical, Globe, Github } from "lucide-react";
+import UploadAnalyzeScreen from "@/components/upload-analyze-screen";
+import { FlaskConical, Globe, Upload, Github } from "lucide-react";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("all-by-all");
@@ -52,14 +53,18 @@ export default function Home() {
       {/* Main content */}
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-5">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-5">
+          <TabsList className="grid w-full max-w-lg grid-cols-3 mb-5">
             <TabsTrigger value="all-by-all" className="flex items-center gap-2" data-testid="tab-all-by-all">
               <FlaskConical size={14} />
               All-by-All Screen
             </TabsTrigger>
-            <TabsTrigger value="proteome-wide" className="flex items-center gap-2" data-testid="tab-proteome-wide">
+            <TabsTrigger value="one-by-all" className="flex items-center gap-2" data-testid="tab-one-by-all">
               <Globe size={14} />
-              Proteome-Wide Screen
+              One-by-All Screen
+            </TabsTrigger>
+            <TabsTrigger value="upload-analyze" className="flex items-center gap-2" data-testid="tab-upload-analyze">
+              <Upload size={14} />
+              Upload &amp; Analyze
             </TabsTrigger>
           </TabsList>
 
@@ -67,8 +72,12 @@ export default function Home() {
             <AllByAllScreen />
           </TabsContent>
 
-          <TabsContent value="proteome-wide">
+          <TabsContent value="one-by-all">
             <ProteomeWideScreen />
+          </TabsContent>
+
+          <TabsContent value="upload-analyze">
+            <UploadAnalyzeScreen />
           </TabsContent>
         </Tabs>
       </main>
